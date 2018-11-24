@@ -5,3 +5,14 @@ import Ecto.{Changeset, Query}
 
 alias MonobolyDeal.Repo
 alias MonobolyDealWeb.Router.Helpers, as: Routes
+
+alias MonobolyDeal.Deck
+
+alias MonobolyDeal.Deck.{
+  MoneyCard,
+  ActionCard,
+  RentCard,
+  PropertyCard,
+  DualPropertyCard,
+  PropertyWildCard
+}
