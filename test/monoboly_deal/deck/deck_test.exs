@@ -1,5 +1,5 @@
 defmodule MonobolyDeal.DeckTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias MonobolyDeal.Deck
 
