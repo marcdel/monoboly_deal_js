@@ -11,9 +11,11 @@ defmodule MonobolyDeal.Application do
       # Start the Ecto repository
       MonobolyDeal.Repo,
       # Start the endpoint when the application starts
-      MonobolyDealWeb.Endpoint
+      MonobolyDealWeb.Endpoint,
       # Starts a worker by calling: MonobolyDeal.Worker.start_link(arg)
       # {MonobolyDeal.Worker, arg},
+      {Registry, keys: :unique, name: MonobolyDeal.GameRegistry},
+      MonobolyDeal.Game.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
