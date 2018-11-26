@@ -16,10 +16,11 @@ defmodule MonobolyDealWeb.Router do
   scope "/", MonobolyDealWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", GameController, :new
 
     delete "/sessions", SessionController, :delete
     resources "/sessions", SessionController, only: [:new, :create]
+    resources "/games", GameController, only: [:new, :create, :show]
   end
 
   # Other scopes may use custom stacks.

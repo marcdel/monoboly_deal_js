@@ -10,7 +10,7 @@ defmodule MonobolyDealWeb.SessionController do
 
     conn
     |> put_session(:current_player, player)
-    |> redirect(to: Routes.page_path(conn, :index))
+    |> redirect(to: Routes.game_path(conn, :create))
   end
 
   def delete(conn, _params) do

@@ -14,8 +14,7 @@ defmodule MonobolyDealWeb.SessionControllerTest do
       conn = post(conn, Routes.session_path(conn, :create), player: attrs)
 
       assert get_session(conn, :current_player) == %MonobolyDeal.Player{name: "player1"}
-      assert redirected_to(conn) == Routes.page_path(conn, :index)
-      # TODO: assert redirected_to(conn) == Routes.game_path(conn, :new)
+      assert redirected_to(conn) == Routes.game_path(conn, :create)
     end
   end
 
