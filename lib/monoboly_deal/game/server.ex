@@ -1,6 +1,8 @@
 defmodule MonobolyDeal.Game.Server do
   use GenServer
 
+  alias MonobolyDeal.Game
+
   @timeout :timer.hours(2)
 
   def start_link(game_name, player) do
@@ -12,6 +14,17 @@ defmodule MonobolyDeal.Game.Server do
   end
 
   def init({game_name, player}) do
-    {:ok, %{}, @timeout}
+    game =
+      case :ets.lookup(:games_table, game_name) do
+        [] ->
+          game = %Game{name: game_name, players: [player]}
+          :ets.insert(:games_table, {game_name, game})
+          game
+
+        [{^game_name, game}] ->
+          game
+      end
+
+    {:ok, game, @timeout}
   end
 end

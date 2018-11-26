@@ -18,6 +18,8 @@ defmodule MonobolyDeal.Application do
       MonobolyDeal.Game.Supervisor
     ]
 
+    :ets.new(:games_table, [:public, :named_table])
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: MonobolyDeal.Supervisor]

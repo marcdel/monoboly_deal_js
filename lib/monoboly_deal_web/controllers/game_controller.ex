@@ -1,6 +1,6 @@
 defmodule MonobolyDealWeb.GameController do
   use MonobolyDealWeb, :controller
-  alias MonobolyDeal.Game.NameGenerator
+  alias MonobolyDeal.Game.{NameGenerator, Supervisor}
 
   plug :require_player
 
@@ -10,7 +10,17 @@ defmodule MonobolyDealWeb.GameController do
 
   def create(conn, _opts) do
     game_name = NameGenerator.generate()
-    redirect(conn, to: Routes.game_path(conn, :show, game_name))
+    player = get_session(conn, :current_player)
+
+    case Supervisor.start_game(game_name, player) do
+      {:ok, _game_pid} ->
+        redirect(conn, to: Routes.game_path(conn, :show, game_name))
+
+      {:error, _error} ->
+        conn
+        |> put_flash(:error, "Sorry, we were unable to start your game.")
+        |> redirect(to: Routes.game_path(conn, :new))
+    end
   end
 
   def show(conn, %{"id" => game_name}) do
