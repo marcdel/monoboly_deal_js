@@ -16,3 +16,5 @@ alias MonobolyDeal.Deck.{
   DualPropertyCard,
   PropertyWildCard
 }
+
+alias MonobolyDeal.Game.NameGenerator

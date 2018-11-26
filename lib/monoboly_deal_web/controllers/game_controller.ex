@@ -1,5 +1,6 @@
 defmodule MonobolyDealWeb.GameController do
   use MonobolyDealWeb, :controller
+  alias MonobolyDeal.Game.NameGenerator
 
   plug :require_player
 
@@ -8,7 +9,7 @@ defmodule MonobolyDealWeb.GameController do
   end
 
   def create(conn, _opts) do
-    game_name = "new_game_name"
+    game_name = NameGenerator.generate()
     redirect(conn, to: Routes.game_path(conn, :show, game_name))
   end
 
