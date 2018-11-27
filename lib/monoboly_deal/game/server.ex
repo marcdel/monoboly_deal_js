@@ -23,7 +23,7 @@ defmodule MonobolyDeal.Game.Server do
     game =
       case :ets.lookup(:games_table, game_name) do
         [] ->
-          game = %Game{name: game_name, players: [player]}
+          game = Game.new(game_name, player)
           :ets.insert(:games_table, {game_name, game})
           game
 

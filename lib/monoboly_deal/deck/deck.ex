@@ -8,6 +8,10 @@ defmodule MonobolyDeal.Deck do
     PropertyWildCard
   }
 
+  def shuffle do
+    Enum.shuffle(cards())
+  end
+
   def cards do
     []
     |> Kernel.++(for _ <- 1..6, do: %MoneyCard{value: 1})

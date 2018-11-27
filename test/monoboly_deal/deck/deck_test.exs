@@ -48,4 +48,10 @@ defmodule MonobolyDeal.DeckTest do
       assert Enum.count(cards) == 2
     end
   end
+
+  describe "shuffle/0" do
+    test "returns the list of cards in a random order" do
+      assert Deck.cards() -- Deck.shuffle() == []
+    end
+  end
 end
