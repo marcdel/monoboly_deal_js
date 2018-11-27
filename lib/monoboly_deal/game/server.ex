@@ -9,6 +9,12 @@ defmodule MonobolyDeal.Game.Server do
     GenServer.start_link(__MODULE__, {game_name, player}, name: via_tuple(game_name))
   end
 
+  def game_pid(game_name) do
+    game_name
+    |> via_tuple()
+    |> GenServer.whereis()
+  end
+
   def via_tuple(game_name) do
     {:via, Registry, {MonobolyDeal.GameRegistry, game_name}}
   end

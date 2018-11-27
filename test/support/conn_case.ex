@@ -26,7 +26,7 @@ defmodule MonobolyDealWeb.ConnCase do
 
       def put_player_in_session(conn, name) do
         params = %{"name" => name}
-        post conn, Routes.session_path(conn, :create), %{"player" => params}
+        post(conn, Routes.session_path(conn, :create), %{"player" => params})
       end
     end
   end

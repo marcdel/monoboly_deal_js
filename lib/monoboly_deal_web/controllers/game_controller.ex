@@ -1,6 +1,6 @@
 defmodule MonobolyDealWeb.GameController do
   use MonobolyDealWeb, :controller
-  alias MonobolyDeal.Game.{NameGenerator, Supervisor}
+  alias MonobolyDeal.Game.{NameGenerator, Supervisor, Server}
 
   plug :require_player
 
@@ -18,15 +18,24 @@ defmodule MonobolyDealWeb.GameController do
 
       {:error, _error} ->
         conn
-        |> put_flash(:error, "Sorry, we were unable to start your game.")
+        |> put_flash(:error, "Oops! We were unable to start your game. Please try again.")
         |> redirect(to: Routes.game_path(conn, :new))
     end
   end
 
   def show(conn, %{"id" => game_name}) do
-    conn
-    |> assign(:game_name, game_name)
-    |> render("show.html")
+    case Server.game_pid(game_name) do
+      pid when is_pid(pid) ->
+        conn
+        |> assign(:game_name, game_name)
+        |> render("show.html")
+
+      nil ->
+        conn
+        |> put_flash(:error, "Oops! That game wasn't found.")
+        |> redirect(to: Routes.game_path(conn, :new))
+        |> halt()
+    end
   end
 
   defp require_player(conn, _opts) do

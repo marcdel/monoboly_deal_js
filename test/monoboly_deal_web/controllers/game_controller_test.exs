@@ -39,6 +39,12 @@ defmodule MonobolyDealWeb.GameControllerTest do
       assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
 
+    test "redirects to new game page if game does not exist", %{conn: conn} do
+      conn = put_player_in_session(conn, "player1")
+      conn = get(conn, Routes.game_path(conn, :show, "non-existent-game"))
+      assert redirected_to(conn) == Routes.game_path(conn, :new)
+    end
+
     test "shows game if it exists", %{conn: conn} do
       conn = put_player_in_session(conn, "player1")
       conn = post(conn, Routes.game_path(conn, :create))
