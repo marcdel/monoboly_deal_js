@@ -7,6 +7,8 @@ alias MonobolyDeal.Repo
 alias MonobolyDealWeb.Router.Helpers, as: Routes
 
 alias MonobolyDeal.Deck
+alias MonobolyDeal.Game
+alias MonobolyDeal.Player
 
 alias MonobolyDeal.Deck.{
   MoneyCard,

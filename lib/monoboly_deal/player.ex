@@ -1,3 +1,3 @@
 defmodule MonobolyDeal.Player do
-  defstruct [:name]
+  defstruct [:name, :hand]
 end
