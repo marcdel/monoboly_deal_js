@@ -1,1 +1,11 @@
 <h1><%= @game_name %></h1>
+
+<button id="deal-button" class="button">
+  Deal
+</button>
+
+<%= content_tag :div, id: "game",
+  data: [name: @game_name] do %>
+<% end %>
+
+<div class="hand-container"></div>
