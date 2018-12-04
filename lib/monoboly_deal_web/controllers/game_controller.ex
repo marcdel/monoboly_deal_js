@@ -1,6 +1,8 @@
 defmodule MonobolyDealWeb.GameController do
   use MonobolyDealWeb, :controller
+
   alias MonobolyDeal.Game.{NameGenerator, Supervisor, Server}
+  alias MonobolyDealWeb.Auth
 
   plug :require_player
 
@@ -39,13 +41,16 @@ defmodule MonobolyDealWeb.GameController do
   end
 
   defp require_player(conn, _opts) do
-    if get_session(conn, :current_player) do
-      conn
-    else
-      conn
-      |> put_session(:return_to, conn.request_path)
-      |> redirect(to: Routes.session_path(conn, :new))
-      |> halt()
+    case get_session(conn, :current_player) do
+      nil ->
+        conn
+        |> put_session(:return_to, conn.request_path)
+        |> redirect(to: Routes.session_path(conn, :new))
+        |> halt()
+
+      player ->
+        conn
+        |> Auth.put_current_player(player)
     end
   end
 end

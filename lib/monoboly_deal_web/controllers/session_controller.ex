@@ -1,6 +1,8 @@
 defmodule MonobolyDealWeb.SessionController do
   use MonobolyDealWeb, :controller
 
+  alias MonobolyDealWeb.Auth
+
   def new(conn, _params) do
     render(conn, "new.html")
   end
@@ -9,7 +11,7 @@ defmodule MonobolyDealWeb.SessionController do
     player = %MonobolyDeal.Player{name: name}
 
     conn
-    |> put_session(:current_player, player)
+    |> Auth.login(player)
     |> redirect_back_or_to_new_game()
   end
 
