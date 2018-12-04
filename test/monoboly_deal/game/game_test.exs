@@ -54,4 +54,22 @@ defmodule MonobolyDeal.GameTest do
       end)
     end
   end
+
+  describe "getting the game status" do
+    test "returns the game status for all players" do
+      game_name = NameGenerator.generate()
+
+      game_status =
+        game_name
+        |> Game.new(%Player{name: "player1"})
+        |> Game.join(%Player{name: "player2"})
+        |> Game.deal()
+        |> Game.game_status()
+
+      assert %{
+               game_name: game_name,
+               players: [%{name: "player1"}, %{name: "player2"}]
+             } = game_status
+    end
+  end
 end

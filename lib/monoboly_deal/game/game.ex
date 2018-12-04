@@ -29,4 +29,14 @@ defmodule MonobolyDeal.Game do
 
     %{game | players: players, deck: deck}
   end
+
+  def game_status(game) do
+    %{
+      game_name: game.name,
+      players:
+        Enum.map(game.players, fn player ->
+          %{name: player.name}
+        end)
+    }
+  end
 end
