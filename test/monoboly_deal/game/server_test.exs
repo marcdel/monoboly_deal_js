@@ -39,4 +39,64 @@ defmodule MonobolyDeal.Game.ServerTest do
       refute Server.game_pid("nonexistent-game")
     end
   end
+
+  describe "join" do
+    test "adds the player to the specified game" do
+      game_name = NameGenerator.generate()
+      player1 = %Player{name: "player1"}
+      player2 = %Player{name: "player2"}
+      {:ok, _pid} = Server.start_link(game_name, player1)
+
+      Server.join(game_name, player2)
+
+      game_status = Server.game_status(game_name)
+      assert game_status.players == [%{name: "player1"}, %{name: "player2"}]
+    end
+  end
+
+  describe "deal_hand" do
+    test "deals a hand to each player and returns the updated game" do
+      game_name = NameGenerator.generate()
+      player = %Player{name: "player1"}
+      {:ok, _pid} = Server.start_link(game_name, player)
+
+      Server.deal_hand(game_name)
+
+      game_status = Server.game_status(game_name)
+
+      Enum.each(game_status.players, fn player ->
+        hand = Server.get_hand(game_name, player)
+        assert Enum.count(hand) == 5
+      end)
+    end
+  end
+
+  describe "game_status" do
+    test "returns the game status for all players" do
+      game_name = NameGenerator.generate()
+      player = %Player{name: "player1"}
+      {:ok, _pid} = Server.start_link(game_name, player)
+      Server.deal_hand(game_name)
+
+      game_status = Server.game_status(game_name)
+
+      assert %{
+               game_name: game_name,
+               players: [%{name: "player1"}]
+             } = game_status
+    end
+  end
+
+  describe "get_hand" do
+    test "returns the hand of the specified player" do
+      game_name = NameGenerator.generate()
+      player = %Player{name: "player1"}
+      {:ok, _pid} = Server.start_link(game_name, player)
+      Server.deal_hand(game_name)
+
+      hand = Server.get_hand(game_name, player)
+
+      assert Enum.count(hand) == 5
+    end
+  end
 end
