@@ -13,11 +13,14 @@ module.exports = (env, options) => ({
     ]
   },
   entry: {
-      './js/app.js': ['./js/app.js'].concat(glob.sync('./vendor/**/*.js'))
+      './js/App.tsx': ['./js/App.tsx'].concat(glob.sync('./vendor/**/*.js'))
   },
   output: {
     filename: 'app.js',
     path: path.resolve(__dirname, '../priv/static/js')
+  },
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.jsx', '.js' ]
   },
   module: {
     rules: [
@@ -26,6 +29,13 @@ module.exports = (env, options) => ({
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
+        }
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader'
         }
       },
       {
