@@ -3,7 +3,6 @@ defmodule MonobolyDeal.Game do
 
   alias MonobolyDeal.Deck
   alias MonobolyDeal.Game
-  alias MonobolyDeal.Player
 
   def new(name, player) do
     %Game{

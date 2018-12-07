@@ -23,7 +23,7 @@ defmodule MonobolyDealWeb.UserSocket do
       {:ok, current_player} ->
         {:ok, assign(socket, :current_player, current_player)}
 
-      {:error, reason} ->
+      {:error, _reason} ->
         :error
     end
   end
