@@ -41,6 +41,17 @@ defmodule MonobolyDeal.GameTest do
     assert game.players == [player1, player2]
   end
 
+  test "joining a game you've already joined" do
+    game_name = NameGenerator.generate()
+    player1 = %Player{name: "player1"}
+    game = Game.new(game_name, player1)
+    assert game.players == [player1]
+
+    game = Game.join(game, player1)
+
+    assert game.players == [player1]
+  end
+
   describe "dealing a hand" do
     test "each player is dealt a hand of 5 cards" do
       game =
@@ -49,9 +60,12 @@ defmodule MonobolyDeal.GameTest do
         |> Game.join(%Player{name: "player2"})
         |> Game.deal()
 
-      Enum.each(game.players, fn player ->
-        assert Enum.count(player.hand) == 5
-      end)
+      Enum.each(
+        game.players,
+        fn player ->
+          assert Enum.count(player.hand) == 5
+        end
+      )
     end
   end
 

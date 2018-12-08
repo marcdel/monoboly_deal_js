@@ -14,17 +14,24 @@ defmodule MonobolyDeal.Game do
   end
 
   def join(game, player) do
-    %{game | players: game.players ++ [player]}
+    case Enum.member?(game.players, player) do
+      false -> %{game | players: game.players ++ [player]}
+      true -> game
+    end
   end
 
   def deal(game) do
     {players, deck} =
-      Enum.map_reduce(game.players, game.deck, fn player, deck ->
-        {hand, updated_deck} = Enum.split(deck, 5)
-        updated_player = %{player | hand: hand}
+      Enum.map_reduce(
+        game.players,
+        game.deck,
+        fn player, deck ->
+          {hand, updated_deck} = Enum.split(deck, 5)
+          updated_player = %{player | hand: hand}
 
-        {updated_player, updated_deck}
-      end)
+          {updated_player, updated_deck}
+        end
+      )
 
     %{game | players: players, deck: deck}
   end
@@ -33,9 +40,12 @@ defmodule MonobolyDeal.Game do
     %{
       game_name: game.name,
       players:
-        Enum.map(game.players, fn player ->
-          %{name: player.name}
-        end)
+        Enum.map(
+          game.players,
+          fn player ->
+            %{name: player.name}
+          end
+        )
     }
   end
 end
