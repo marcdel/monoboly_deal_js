@@ -6,6 +6,8 @@ defmodule MonobolyDealWeb.GameChannel do
   def join("games:" <> game_name, _params, socket) do
     case Server.game_pid(game_name) do
       pid when is_pid(pid) ->
+        Server.join(game_name, socket.assigns.current_player)
+
         send(self(), {:after_join, game_name})
         {:ok, assign(socket, :game_name, game_name)}
 
@@ -27,9 +29,11 @@ defmodule MonobolyDealWeb.GameChannel do
 
     case Server.game_pid(game_name) do
       pid when is_pid(pid) ->
-        current_player = socket.assigns.current_player
         Server.deal_hand(game_name)
+
+        current_player = socket.assigns.current_player
         players_hand = Server.get_hand(game_name, current_player)
+
         push(socket, "player_hand", %{hand: players_hand})
         {:noreply, socket}
 
