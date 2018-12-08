@@ -16,3 +16,5 @@ config :monoboly_deal, MonobolyDeal.Repo,
   database: "monoboly_deal_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :phoenix_integration, endpoint: MonobolyDealWeb.Endpoint
