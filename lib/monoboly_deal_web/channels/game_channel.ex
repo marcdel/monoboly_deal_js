@@ -25,7 +25,6 @@ defmodule MonobolyDealWeb.GameChannel do
 
   def handle_in("deal_hand", _params, socket) do
     "games:" <> game_name = socket.topic
-    Server.game_pid(game_name)
 
     case Server.game_pid(game_name) do
       pid when is_pid(pid) ->

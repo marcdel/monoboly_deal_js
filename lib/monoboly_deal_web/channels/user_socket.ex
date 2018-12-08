@@ -3,6 +3,7 @@ defmodule MonobolyDealWeb.UserSocket do
 
   ## Channels
   channel "games:*", MonobolyDealWeb.GameChannel
+  channel "players:*", MonobolyDealWeb.PlayerChannel
 
   # About two weeks
   @max_age 2 * 7 * 24 * 60 * 60

@@ -3,6 +3,7 @@ import * as React from "react"
 
 interface Props {
   gameName: string
+  playerName: string
   socket: Socket
 }
 
@@ -36,10 +37,10 @@ export class Game extends React.Component<Props, State> {
     gameChannel
       .join()
       .receive("ok", (response) => {
-        console.log("join", {response})
+        console.log("game channel joined", {response})
       })
       .receive("error", (reason) => {
-        console.log("join failed", {reason})
+        console.log("game channel join failed", {reason})
       })
 
     gameChannel.on("player_hand", (response) => {
@@ -47,6 +48,17 @@ export class Game extends React.Component<Props, State> {
         this.setState({newGame: false, hand: response.hand})
       }
     })
+
+    const playerChannel = this.props.socket.channel("players:" + this.props.playerName)
+
+    playerChannel
+      .join()
+      .receive("ok", (response) => {
+        console.log("player channel joined", {response})
+      })
+      .receive("error", (reason) => {
+        console.log("player channel join failed", {reason})
+      })
   }
 
   public render() {
@@ -69,9 +81,11 @@ export class Game extends React.Component<Props, State> {
         console.log("deal_hand", {error})
       })
   }
+
   private renderHand = () => {
     return this.state.hand.map(this.renderCard)
   }
+
   private renderCard = (card: Card, index: number) => {
     return (
       <div key={index}>{card.value} {card.name}</div>
