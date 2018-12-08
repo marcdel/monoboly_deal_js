@@ -7,7 +7,7 @@ interface Props {
 }
 
 interface State {
-  gameChannel: Channel
+  gameChannel: Channel | null
   hand: Card[]
   newGame: boolean
 }
@@ -21,16 +21,19 @@ export class Game extends React.Component<Props, State> {
   constructor(props: Props, state: State) {
     super(props, state)
 
-    props.socket.connect()
     this.state = {
-      gameChannel: props.socket.channel("games:" + props.gameName),
+      gameChannel: null,
       hand: [],
       newGame: true,
     }
   }
 
   public componentDidMount() {
-    this.state.gameChannel
+    this.props.socket.connect()
+    const gameChannel = this.props.socket.channel("games:" + this.props.gameName)
+    this.setState({gameChannel})
+
+    gameChannel
       .join()
       .receive("ok", (response) => {
         console.log("join", {response})
@@ -39,7 +42,7 @@ export class Game extends React.Component<Props, State> {
         console.log("join failed", {reason})
       })
 
-    this.state.gameChannel.on("player_hand", (response) => {
+    gameChannel.on("player_hand", (response) => {
       if (response.hand) {
         this.setState({newGame: false, hand: response.hand})
       }
