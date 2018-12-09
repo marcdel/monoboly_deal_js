@@ -31,6 +31,43 @@ export class Game extends React.Component<Props, State> {
 
   public componentDidMount() {
     this.props.socket.connect()
+    this.initializeGameChannel()
+    this.initializePlayerChannel()
+  }
+
+  public render() {
+    const {gameName} = this.props
+    const {newGame} = this.state
+
+    return (
+      <>
+        <h1>{gameName}</h1>
+        {newGame && <button onClick={this.dealHand} className="button">Deal</button>}
+        {this.renderHand()}
+      </>
+    )
+  }
+
+  private initializePlayerChannel() {
+    const playerChannel = this.props.socket.channel("players:" + this.props.playerName)
+
+    playerChannel
+      .join()
+      .receive("ok", (response) => {
+        console.log("player channel joined", {response})
+      })
+      .receive("error", (reason) => {
+        console.log("player channel join failed", {reason})
+      })
+
+    playerChannel.on("player_hand", (response) => {
+      if (response.hand) {
+        this.setState({newGame: false, hand: response.hand})
+      }
+    })
+  }
+
+  private initializeGameChannel() {
     const gameChannel = this.props.socket.channel("games:" + this.props.gameName)
     this.setState({gameChannel})
 
@@ -48,30 +85,6 @@ export class Game extends React.Component<Props, State> {
         this.setState({newGame: false, hand: response.hand})
       }
     })
-
-    const playerChannel = this.props.socket.channel("players:" + this.props.playerName)
-
-    playerChannel
-      .join()
-      .receive("ok", (response) => {
-        console.log("player channel joined", {response})
-      })
-      .receive("error", (reason) => {
-        console.log("player channel join failed", {reason})
-      })
-  }
-
-  public render() {
-    const {gameName} = this.props
-    const {newGame} = this.state
-
-    return (
-      <>
-        <h1>{gameName}</h1>
-        {newGame && <button onClick={this.dealHand} className="button">Deal</button>}
-        {this.renderHand()}
-      </>
-    )
   }
 
   private dealHand = () => {

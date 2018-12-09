@@ -25,7 +25,7 @@ defmodule MonobolyDeal.GameTest do
 
       assert game.discard_pile == []
 
-      assert Deck.cards() -- Deck.shuffle() == []
+      assert game.deck -- Deck.cards() == []
       refute game.deck == Deck.cards()
     end
   end
@@ -84,6 +84,22 @@ defmodule MonobolyDeal.GameTest do
                game_name: game_name,
                players: [%{name: "player1"}, %{name: "player2"}]
              } = game_status
+    end
+  end
+
+  describe "getting a players hand" do
+    test "returns the hand of the specified player" do
+      game_name = NameGenerator.generate()
+      player1 = %Player{name: "player1"}
+
+      hand =
+        game_name
+        |> Game.new(player1)
+        |> Game.join(%Player{name: "player2"})
+        |> Game.deal()
+        |> Game.get_hand(player1)
+
+      assert Enum.count(hand) == 5
     end
   end
 end

@@ -48,4 +48,9 @@ defmodule MonobolyDeal.Game do
         )
     }
   end
+
+  def get_hand(game, player) do
+    found_player = Enum.find(game.players, fn p -> p.name == player.name end)
+    found_player.hand
+  end
 end

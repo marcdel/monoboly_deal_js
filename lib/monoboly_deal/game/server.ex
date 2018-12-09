@@ -2,6 +2,7 @@ defmodule MonobolyDeal.Game.Server do
   use GenServer
 
   alias MonobolyDeal.Game
+  alias MonobolyDealWeb.Endpoint
 
   @timeout :timer.hours(2)
 
@@ -57,6 +58,7 @@ defmodule MonobolyDeal.Game.Server do
 
   def handle_cast(:deal_hand, game) do
     updated_game = Game.deal(game)
+    broadcast_hands(updated_game)
     {:noreply, updated_game, @timeout}
   end
 
@@ -67,7 +69,15 @@ defmodule MonobolyDeal.Game.Server do
   end
 
   def handle_call({:get_hand, player}, _from, game) do
-    player = Enum.find(game.players, fn p -> p.name == player.name end)
-    {:reply, player.hand, game, @timeout}
+    {:reply, Game.get_hand(game, player), game, @timeout}
+  end
+
+  defp broadcast_hands(game) do
+    Enum.each(
+      game.players,
+      fn player ->
+        Endpoint.broadcast!("players:" <> player.name, "player_hand", %{hand: player.hand})
+      end
+    )
   end
 end

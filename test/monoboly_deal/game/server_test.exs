@@ -64,10 +64,13 @@ defmodule MonobolyDeal.Game.ServerTest do
 
       game_status = Server.game_status(game_name)
 
-      Enum.each(game_status.players, fn player ->
-        hand = Server.get_hand(game_name, player)
-        assert Enum.count(hand) == 5
-      end)
+      Enum.each(
+        game_status.players,
+        fn player ->
+          hand = Server.get_hand(game_name, player)
+          assert Enum.count(hand) == 5
+        end
+      )
     end
   end
 

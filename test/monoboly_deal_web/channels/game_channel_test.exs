@@ -1,5 +1,5 @@
 defmodule MonobolyDealWeb.GameChannelTest do
-  use MonobolyDealWeb.ChannelCase
+  use MonobolyDealWeb.ChannelCase, async: true
 
   alias MonobolyDealWeb.GameChannel
   alias MonobolyDeal.Game.{NameGenerator, Server, Supervisor}
@@ -69,13 +69,43 @@ defmodule MonobolyDealWeb.GameChannelTest do
   end
 
   describe "deal_hand" do
-    test "pushes the dealt hand to the current player", context do
+    @tag :skip
+    test "broadcasts the dealt hand to the current player", context do
       {:ok, _reply, socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
 
       push(socket, "deal_hand", %{})
 
+      assert_broadcast("player_hand", %{hand: hand})
+      assert hand == Server.get_hand(context.game_name, context.player)
+    end
+
+    @tag :skip # figure out how, and at what level, to test this
+    test "broadcasts a message to each player in the game with their hand", context do
+      player2 = %Player{name: "player2"}
+      player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
+      {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
+
+      {:ok, _reply, player2_socket} =
+        subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
+
+      push(player2_socket, "deal_hand", %{})
+
+      player1_topic = "players:" <> context.player.name
       hand = Server.get_hand(context.game_name, context.player)
-      assert_push("player_hand", %{hand: ^hand})
+      assert_receive(
+        %Phoenix.Socket.Broadcast{
+          event: "player_hand",
+          topic: ^player1_topic,
+          payload: %{
+            hand: ^hand
+          }
+        },
+        100
+      )
+      assert_broadcast("player_hand", %{hand: ^hand})
+
+      hand2 = Server.get_hand(context.game_name, player2)
+      assert_broadcast("player_hand", %{hand: ^hand2})
     end
 
     test "returns an error if game does not exist", context do
