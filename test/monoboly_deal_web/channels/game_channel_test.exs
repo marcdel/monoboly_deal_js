@@ -25,13 +25,6 @@ defmodule MonobolyDealWeb.GameChannelTest do
   end
 
   describe "join" do
-    test "assigns the current player to the socket and returns a nil hand", context do
-      {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
-
-      assert context.socket.assigns.current_player == context.player
-      assert_push("player_hand", %{hand: nil})
-    end
-
     test "joins the specified game", context do
       {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
 
@@ -46,6 +39,21 @@ defmodule MonobolyDealWeb.GameChannelTest do
       {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
 
       assert_push("player_hand", %{hand: ^hand})
+    end
+
+    test "pushes presence state to the player", context do
+      {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
+
+      assert_push("presence_state", %{})
+
+      player2 = %Player{name: "player2"}
+      player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
+      {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
+
+      {:ok, _reply, player2_socket} =
+        subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
+
+      assert_push("presence_state", %{})
     end
 
     test "a second player can join the game", context do

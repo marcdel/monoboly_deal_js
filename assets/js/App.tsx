@@ -1,9 +1,9 @@
 import "phoenix_html"
-import socket from "./socket"
+import socket from "./communication/socket"
 
 import * as React from "react"
 import {render} from "react-dom"
-import {Game} from "./Game"
+import {Game} from "./components/Game"
 
 const gameDiv = document.getElementById("game")
 if (gameDiv) {

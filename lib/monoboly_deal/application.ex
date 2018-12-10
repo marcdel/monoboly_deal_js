@@ -12,6 +12,7 @@ defmodule MonobolyDeal.Application do
       MonobolyDeal.Repo,
       # Start the endpoint when the application starts
       MonobolyDealWeb.Endpoint,
+      MonobolyDealWeb.Presence,
       # Starts a worker by calling: MonobolyDeal.Worker.start_link(arg)
       # {MonobolyDeal.Worker, arg},
       {Registry, keys: :unique, name: MonobolyDeal.GameRegistry},
