@@ -18,8 +18,12 @@ defmodule MonobolyDeal.Game.Server do
     GenServer.cast(via_tuple(game_name), :deal_hand)
   end
 
-  def game_status(game_name) do
-    GenServer.call(via_tuple(game_name), :game_status)
+  def game_state(game_name) do
+    GenServer.call(via_tuple(game_name), :game_state)
+  end
+
+  def player_state(game_name, player) do
+    GenServer.call(via_tuple(game_name), {:player_state, player})
   end
 
   def get_hand(game_name, player) do
@@ -62,10 +66,12 @@ defmodule MonobolyDeal.Game.Server do
     {:noreply, updated_game, @timeout}
   end
 
-  def handle_call(:game_status, _from, game) do
-    game_status = Game.game_status(game)
+  def handle_call(:game_state, _from, game) do
+    {:reply, Game.game_state(game), game, @timeout}
+  end
 
-    {:reply, game_status, game, @timeout}
+  def handle_call({:player_state, player}, _from, game) do
+    {:reply, Game.player_state(game, player), game, @timeout}
   end
 
   def handle_call({:get_hand, player}, _from, game) do

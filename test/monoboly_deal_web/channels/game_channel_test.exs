@@ -28,17 +28,8 @@ defmodule MonobolyDealWeb.GameChannelTest do
     test "joins the specified game", context do
       {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
 
-      game_status = Server.game_status(context.game_name)
-      assert Enum.map(game_status.players, fn player -> player.name end) == [context.player.name]
-    end
-
-    test "pushes the players current hand if one has already been dealt", context do
-      Server.deal_hand(context.game_name)
-      hand = Server.get_hand(context.game_name, context.player)
-
-      {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
-
-      assert_push("player_hand", %{hand: ^hand})
+      game_state = Server.game_state(context.game_name)
+      assert Enum.map(game_state.players, fn player -> player.name end) == [context.player.name]
     end
 
     test "pushes presence state to the player", context do
@@ -50,10 +41,33 @@ defmodule MonobolyDealWeb.GameChannelTest do
       player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
       {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
 
-      {:ok, _reply, player2_socket} =
+      {:ok, _reply, _player2_socket} =
         subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
 
       assert_push("presence_state", %{})
+    end
+
+    test "broadcasts game state to all players", context do
+      {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
+
+      player2 = %Player{name: "player2"}
+      player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
+      {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
+
+      {:ok, _reply, _player2_socket} =
+        subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
+
+      game_state = Server.game_state(context.game_name)
+      assert_broadcast("game_state", ^game_state)
+    end
+
+    test "pushes player state to the player", context do
+      Server.deal_hand(context.game_name)
+      player_state = Server.player_state(context.game_name, context.player)
+
+      {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
+
+      assert_push("player_state", ^player_state)
     end
 
     test "a second player can join the game", context do
@@ -66,8 +80,8 @@ defmodule MonobolyDealWeb.GameChannelTest do
 
       push(player2_socket, "deal_hand", %{})
 
-      assert_push("player_hand", %{hand: player2_hand})
-      assert player2_hand == Server.get_hand(context.game_name, player2)
+      assert_push("player_state", player2_state)
+      assert player2_state == Server.player_state(context.game_name, player2)
     end
 
     test "returns error if game does not exist", context do
@@ -114,6 +128,24 @@ defmodule MonobolyDealWeb.GameChannelTest do
 
       hand2 = Server.get_hand(context.game_name, player2)
       assert_broadcast("player_hand", %{hand: ^hand2})
+    end
+
+    test "pushes game state to the player", context do
+      {:ok, _reply, socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
+
+      player2 = %Player{name: "player2"}
+      player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
+      {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
+
+      {:ok, _reply, _player2_socket} =
+        subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
+
+      push(socket, "deal_hand", %{})
+
+      :timer.sleep(1)
+      game_state = Server.game_state(context.game_name)
+      assert game_state.started == true
+      assert_push("game_state", ^game_state)
     end
 
     test "returns an error if game does not exist", context do

@@ -15,9 +15,11 @@ interface Props {
 }
 
 interface State {
+  currentPlayer: Player
   gameChannel: GameChannel | null
   gameState: GameState
   playerChannel: PlayerChannel | null
+  presentPlayers: Player[]
 }
 
 export class Game extends React.Component<Props, State> {
@@ -25,15 +27,17 @@ export class Game extends React.Component<Props, State> {
     super(props, state)
 
     const gameState = new GameState({
-      currentPlayer: new Player(this.props.playerName),
       gameStarted: false,
       name: this.props.gameName,
+      players: [],
     })
 
     this.state = {
+      currentPlayer: new Player({name: this.props.playerName}),
       gameChannel: null,
       gameState,
       playerChannel: null,
+      presentPlayers: [],
     }
   }
 
@@ -46,7 +50,8 @@ export class Game extends React.Component<Props, State> {
     playerChannel.onHandUpdated(this.onHandUpdated)
 
     const gameChannel = new GameChannel(gameName, socket)
-    gameChannel.onHandUpdated(this.onHandUpdated)
+    gameChannel.onGameStateUpdated(this.onGameStateUpdated)
+    gameChannel.onPlayerStateUpdated(this.onPlayerStateUpdated)
 
     const gamePresence = new GamePresence(
       createPresence(gameChannel.channel),
@@ -64,6 +69,7 @@ export class Game extends React.Component<Props, State> {
         <h1>{gameState.name}</h1>
         {this.renderDealButton(gameState)}
         {this.renderHand()}
+        {this.renderPlayers()}
       </>
     )
   }
@@ -81,13 +87,38 @@ export class Game extends React.Component<Props, State> {
   }
 
   private renderHand = () => {
-    const {gameState} = this.state
-    return gameState.currentPlayer.hand.map(this.renderCard)
+    const {currentPlayer} = this.state
+    return (
+      <>
+        <h3>Cards</h3>
+        <ul>
+          {currentPlayer.hand.map(this.renderCard)}
+        </ul>
+      </>
+    )
   }
 
   private renderCard = (card: Card, index: number) => {
     return (
-      <div key={index}>{card.value} {card.name}</div>
+      <li key={index}>{card.value} {card.name}</li>
+    )
+  }
+
+  private renderPlayers = () => {
+    const {gameState} = this.state
+    return (
+      <>
+        <h3>Players</h3>
+        <ul>
+          {gameState.players.map(this.renderPlayer)}
+        </ul>
+      </>
+    )
+  }
+
+  private renderPlayer = (player: Player, index: number) => {
+    return (
+      <li key={index}>{player.name}</li>
     )
   }
 
@@ -96,17 +127,21 @@ export class Game extends React.Component<Props, State> {
   }
 
   private onHandUpdated = (cards: Card[]): void => {
-    const gameState = {...this.state.gameState}
-    gameState.gameStarted = true
-    gameState.currentPlayer.hand = cards
+    const currentPlayer = {...this.state.currentPlayer}
+    currentPlayer.hand = cards
 
-    this.setState({gameState})
+    this.setState({currentPlayer})
+  }
+
+  private onGameStateUpdated = (newGameState: GameState) => {
+    this.setState({gameState: {...this.state.gameState, ...newGameState}})
+  }
+
+  private onPlayerStateUpdated = (newPlayerState: Player) => {
+    this.setState({currentPlayer: newPlayerState})
   }
 
   private onPlayersUpdated = (players: Player[]): void => {
-    const gameState = {...this.state.gameState}
-    gameState.players = players
-
-    this.setState({gameState})
+    this.setState({presentPlayers: players})
   }
 }

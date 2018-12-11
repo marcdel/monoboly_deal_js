@@ -18,8 +18,11 @@ defmodule MonobolyDealWeb.GameChannel do
   end
 
   def handle_info({:after_join, game_name}, socket) do
-    players_hand = Server.get_hand(game_name, current_player(socket))
-    push(socket, "player_hand", %{hand: players_hand})
+    game_state = Server.game_state(game_name)
+    broadcast(socket, "game_state", game_state)
+
+    player_state = Server.player_state(game_name, current_player(socket))
+    push(socket, "player_state", player_state)
 
     push(socket, "presence_state", Presence.list(socket))
 
@@ -41,6 +44,9 @@ defmodule MonobolyDealWeb.GameChannel do
     case Server.game_pid(game_name) do
       pid when is_pid(pid) ->
         Server.deal_hand(game_name)
+
+        game_state = Server.game_state(game_name)
+        push(socket, "game_state", game_state)
         {:noreply, socket}
 
       nil ->

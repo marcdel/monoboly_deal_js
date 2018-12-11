@@ -1,5 +1,5 @@
 defmodule MonobolyDeal.Game do
-  defstruct [:name, :players, :discard_pile, :deck]
+  defstruct [:name, :players, :discard_pile, :deck, :started]
 
   alias MonobolyDeal.Deck
   alias MonobolyDeal.Game
@@ -9,12 +9,13 @@ defmodule MonobolyDeal.Game do
       name: name,
       players: [player],
       discard_pile: [],
-      deck: Deck.shuffle()
+      deck: Deck.shuffle(),
+      started: false
     }
   end
 
   def join(game, player) do
-    case Enum.member?(game.players, player) do
+    case Enum.any?(game.players, fn p -> p.name == player.name end) do
       false -> %{game | players: game.players ++ [player]}
       true -> game
     end
@@ -33,10 +34,10 @@ defmodule MonobolyDeal.Game do
         end
       )
 
-    %{game | players: players, deck: deck}
+    %{game | players: players, deck: deck, started: true}
   end
 
-  def game_status(game) do
+  def game_state(game) do
     %{
       game_name: game.name,
       players:
@@ -45,12 +46,27 @@ defmodule MonobolyDeal.Game do
           fn player ->
             %{name: player.name}
           end
-        )
+        ),
+      started: game.started
     }
   end
 
+  def player_state(game, player) do
+    found_player = find_player(game, player)
+
+    %{
+      name: found_player.name,
+      hand: found_player.hand
+    }
+  end
+
+
   def get_hand(game, player) do
-    found_player = Enum.find(game.players, fn p -> p.name == player.name end)
+    found_player = find_player(game, player)
     found_player.hand
+  end
+
+  defp find_player(game, player) do
+    Enum.find(game.players, fn p -> p.name == player.name end)
   end
 end

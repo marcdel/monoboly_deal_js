@@ -1,5 +1,6 @@
 import {Channel, Socket} from "phoenix"
-import {Card} from "../models/Card"
+import {GameState} from "../models/GameState"
+import {Player} from "../models/Player"
 
 export class GameChannel {
   public channel: Channel
@@ -17,12 +18,25 @@ export class GameChannel {
       })
   }
 
-  public onHandUpdated(callBack: (hand: Card[]) => void) {
-    this.channel.on("player_hand", (response: { hand: object[] }) => {
-      if (response && response.hand) {
-        const cards = response.hand.map((card: object) => new Card(card))
+  public onGameStateUpdated(callBack: (gameState: GameState) => void) {
+    this.channel.on("game_state", (response: any) => {
+      if (response) {
+        const gameState = new GameState({
+          gameStarted: response.started,
+          name: response.game_name,
+          players: response.players.map((player: any) => new Player({name: player.name})),
+        })
 
-        callBack(cards)
+        callBack(gameState)
+      }
+    })
+  }
+
+  public onPlayerStateUpdated(callBack: (playerState: Player) => void) {
+    this.channel.on("player_state", (response: any) => {
+      if (response) {
+        const player = new Player(response)
+        callBack(player)
       }
     })
   }

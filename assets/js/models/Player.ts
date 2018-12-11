@@ -4,8 +4,8 @@ export class Player {
   public name: string
   public hand: Card[]
 
-  constructor(name: string) {
-    this.name = name
-    this.hand = []
+  constructor(params: Partial<Player> = {}) {
+    this.name = params.name
+    this.hand = params.hand || []
   }
 }

@@ -17,7 +17,7 @@ export class GamePresence {
 
   private onSync = () => {
     const players = this.presence.list((playerName: string, player: PlayerPresence) => {
-      return new Player(playerName)
+      return new Player({name: playerName})
     })
 
     this.onSyncCallback(players)

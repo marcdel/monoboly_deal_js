@@ -49,8 +49,8 @@ defmodule MonobolyDeal.Game.ServerTest do
 
       Server.join(game_name, player2)
 
-      game_status = Server.game_status(game_name)
-      assert game_status.players == [%{name: "player1"}, %{name: "player2"}]
+      game_state = Server.game_state(game_name)
+      assert game_state.players == [%{name: "player1"}, %{name: "player2"}]
     end
   end
 
@@ -62,10 +62,10 @@ defmodule MonobolyDeal.Game.ServerTest do
 
       Server.deal_hand(game_name)
 
-      game_status = Server.game_status(game_name)
+      game_state = Server.game_state(game_name)
 
       Enum.each(
-        game_status.players,
+        game_state.players,
         fn player ->
           hand = Server.get_hand(game_name, player)
           assert Enum.count(hand) == 5
@@ -74,19 +74,33 @@ defmodule MonobolyDeal.Game.ServerTest do
     end
   end
 
-  describe "game_status" do
-    test "returns the game status for all players" do
+  describe "game_state" do
+    test "returns the game state for all players" do
       game_name = NameGenerator.generate()
       player = %Player{name: "player1"}
       {:ok, _pid} = Server.start_link(game_name, player)
       Server.deal_hand(game_name)
 
-      game_status = Server.game_status(game_name)
+      game_state = Server.game_state(game_name)
 
       assert %{
                game_name: game_name,
                players: [%{name: "player1"}]
-             } = game_status
+             } = game_state
+    end
+  end
+
+  describe "player_state" do
+    test "returns the player state for the specified player" do
+      game_name = NameGenerator.generate()
+      player = %Player{name: "player1"}
+      {:ok, _pid} = Server.start_link(game_name, player)
+      Server.deal_hand(game_name)
+
+      player_state = Server.player_state(game_name, player)
+
+      assert player_state.name == "player1"
+      assert Enum.count(player_state.hand) == 5
     end
   end
 
