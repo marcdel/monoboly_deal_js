@@ -4,6 +4,7 @@ import {GameChannel} from "../communication/GameChannel"
 import {GamePresence} from "../communication/GamePresence"
 import {PlayerChannel} from "../communication/PlayerChannel"
 import {createPresence} from "../communication/presenceHelper"
+import {PlayersList} from "../components/PlayersList"
 import {Card} from "../models/Card"
 import {GameState} from "../models/GameState"
 import {Player} from "../models/Player"
@@ -65,12 +66,13 @@ export class Game extends React.Component<Props, State> {
     const {gameState} = this.state
 
     return (
-      <>
-        <h1>{gameState.name}</h1>
-        {this.renderDealButton(gameState)}
-        {this.renderHand()}
-        {this.renderPlayers()}
-      </>
+      <div className="game-container">
+        <div className="hand-container">
+          {this.renderDealButton(gameState)}
+          {this.renderHand()}
+        </div>
+        <PlayersList players={gameState.players}/>
+      </div>
     )
   }
 
@@ -87,7 +89,12 @@ export class Game extends React.Component<Props, State> {
   }
 
   private renderHand = () => {
-    const {currentPlayer} = this.state
+    const {currentPlayer, gameState} = this.state
+
+    if (!gameState.gameStarted) {
+      return
+    }
+
     return (
       <>
         <h3>Cards</h3>
@@ -101,18 +108,6 @@ export class Game extends React.Component<Props, State> {
   private renderCard = (card: Card, index: number) => {
     return (
       <li key={index}>{card.value} {card.name}</li>
-    )
-  }
-
-  private renderPlayers = () => {
-    const {gameState} = this.state
-    return (
-      <>
-        <h3>Players</h3>
-        <ul>
-          {gameState.players.map(this.renderPlayer)}
-        </ul>
-      </>
     )
   }
 
