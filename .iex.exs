@@ -11,12 +11,12 @@ alias MonobolyDeal.Game
 alias MonobolyDeal.Player
 
 alias MonobolyDeal.Deck.{
-  MoneyCard,
-  ActionCard,
-  RentCard,
-  PropertyCard,
-  DualPropertyCard,
-  PropertyWildCard
-}
+  Money,
+  Action,
+  Rent,
+  Property,
+  DualProperty,
+  WildProperty
+  }
 
 alias MonobolyDeal.Game.NameGenerator

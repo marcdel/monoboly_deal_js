@@ -8,6 +8,7 @@ import {PlayersList} from "../components/PlayersList"
 import {Card} from "../models/Card"
 import {GameState} from "../models/GameState"
 import {Player} from "../models/Player"
+import {PlayerHand} from "./PlayerHand"
 
 interface Props {
   gameName: string
@@ -63,13 +64,13 @@ export class Game extends React.Component<Props, State> {
   }
 
   public render() {
-    const {gameState} = this.state
+    const {currentPlayer, gameState} = this.state
 
     return (
       <div className="game-container">
         <div className="hand-container">
           {this.renderDealButton(gameState)}
-          {this.renderHand()}
+          {gameState.gameStarted && <PlayerHand cards={currentPlayer.hand}/>}
         </div>
         <PlayersList players={gameState.players}/>
       </div>
@@ -85,35 +86,6 @@ export class Game extends React.Component<Props, State> {
       <button onClick={this.dealHand} className="button">
         Deal
       </button>
-    )
-  }
-
-  private renderHand = () => {
-    const {currentPlayer, gameState} = this.state
-
-    if (!gameState.gameStarted) {
-      return
-    }
-
-    return (
-      <>
-        <h3>Cards</h3>
-        <ul>
-          {currentPlayer.hand.map(this.renderCard)}
-        </ul>
-      </>
-    )
-  }
-
-  private renderCard = (card: Card, index: number) => {
-    return (
-      <li key={index}>{card.value} {card.name}</li>
-    )
-  }
-
-  private renderPlayer = (player: Player, index: number) => {
-    return (
-      <li key={index}>{player.name}</li>
     )
   }
 

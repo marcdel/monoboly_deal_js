@@ -1,9 +1,14 @@
-export class Card {
-  public name: string
-  public value: number
+import {Action} from "../models/cards/action"
+import {Money} from "../models/cards/Money"
+import {DualProperty} from "./cards/DualProperty"
+import {Property} from "./cards/Property"
+import {WildProperty} from "./cards/WildProperty"
+import {Rent} from "./cards/Rent"
 
-  constructor(params: Partial<Card>) {
-    this.name = params.name
-    this.value = params.value
-  }
-}
+export type Card =
+  Action |
+  DualProperty |
+  Money |
+  Property |
+  WildProperty |
+  Rent

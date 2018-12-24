@@ -1,12 +1,15 @@
 import {Channel, Socket} from "phoenix"
 import {GameState} from "../models/GameState"
 import {Player} from "../models/Player"
+import {PlayerSerializer} from "../serializers/PlayerSerializer"
 
 export class GameChannel {
   public channel: Channel
+  private playerSerializer: PlayerSerializer
 
   constructor(gameName: string, socket: Socket) {
     this.channel = socket.channel("games:" + gameName)
+    this.playerSerializer = new PlayerSerializer()
 
     this.channel
       .join()
@@ -24,7 +27,9 @@ export class GameChannel {
         const gameState = new GameState({
           gameStarted: response.started,
           name: response.game_name,
-          players: response.players.map((player: any) => new Player({name: player.name})),
+          players: response.players.map((player: any) => {
+            return this.playerSerializer.deserialize(player)
+          }),
         })
 
         callBack(gameState)
@@ -35,7 +40,7 @@ export class GameChannel {
   public onPlayerStateUpdated(callBack: (playerState: Player) => void) {
     this.channel.on("player_state", (response: any) => {
       if (response) {
-        const player = new Player(response)
+        const player = this.playerSerializer.deserialize(response)
         callBack(player)
       }
     })

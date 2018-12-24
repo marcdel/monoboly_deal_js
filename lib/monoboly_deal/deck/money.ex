@@ -1,11 +1,11 @@
-defmodule MonobolyDeal.Deck.MoneyCard do
-  alias MonobolyDeal.Deck.MoneyCard
+defmodule MonobolyDeal.Deck.Money do
+  alias MonobolyDeal.Deck.Money
 
   @derive {Jason.Encoder, only: [:name, :value]}
   @enforce_keys [:name, :value]
   defstruct [:name, :value]
 
   def new(value) do
-    %MoneyCard{name: :money_card, value: value}
+    %Money{name: :money_card, value: value}
   end
 end
