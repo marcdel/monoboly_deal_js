@@ -1,0 +1,12 @@
+---
+applications:
+  - name: monoboly_deal
+    memory: 1024M
+    instances: 1
+    routes:
+      - route: monoboly_deal.cfapps.io
+    buildpacks:
+      - https://github.com/HashNuke/heroku-buildpack-elixir.git
+    env:
+      MIX_ENV: prod
+    command: mix ecto.migrate && mix phx.server
