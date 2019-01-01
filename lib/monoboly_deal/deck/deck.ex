@@ -6,7 +6,7 @@ defmodule MonobolyDeal.Deck do
     Property,
     DualProperty,
     WildProperty
-    }
+  }
 
   def shuffle do
     Enum.shuffle(cards())
@@ -36,23 +36,21 @@ defmodule MonobolyDeal.Deck do
     |> Kernel.++(for _ <- 1..2, do: Rent.new([:light_blue, :brown]))
     |> Kernel.++(for _ <- 1..2, do: Rent.new([:railroad, :utility]))
     |> Kernel.++(
-         for _ <- 1..3,
-         do:
-           Rent.new(
-             [
-               :blue,
-               :green,
-               :red,
-               :yellow,
-               :pink,
-               :orange,
-               :light_blue,
-               :brown,
-               :railroad,
-               :utility
-             ]
-           )
-       )
+      for _ <- 1..3,
+          do:
+            Rent.new([
+              :blue,
+              :green,
+              :red,
+              :yellow,
+              :pink,
+              :orange,
+              :light_blue,
+              :brown,
+              :railroad,
+              :utility
+            ])
+    )
     |> Kernel.++(for _ <- 1..2, do: Property.new(4, :blue, [3, 8]))
     |> Kernel.++(for _ <- 1..2, do: Property.new(1, :brown, [1, 2]))
     |> Kernel.++(for _ <- 1..2, do: Property.new(2, :utility, [1, 2]))
@@ -63,62 +61,52 @@ defmodule MonobolyDeal.Deck do
     |> Kernel.++(for _ <- 1..3, do: Property.new(2, :pink, [1, 2, 4]))
     |> Kernel.++(for _ <- 1..3, do: Property.new(1, :light_blue, [1, 2, 3]))
     |> Kernel.++(for _ <- 1..4, do: Property.new(2, :railroad, [1, 2, 3, 4]))
+    |> Kernel.++([
+      DualProperty.new(
+        Property.new(4, :blue, [3, 8]),
+        Property.new(4, :green, [2, 4, 7])
+      )
+    ])
+    |> Kernel.++([
+      DualProperty.new(
+        Property.new(4, :green, [2, 4, 7]),
+        Property.new(2, :railroad, [1, 2, 3, 4])
+      )
+    ])
+    |> Kernel.++([
+      DualProperty.new(
+        Property.new(2, :utility, [1, 2]),
+        Property.new(2, :railroad, [1, 2, 3, 4])
+      )
+    ])
+    |> Kernel.++([
+      DualProperty.new(
+        Property.new(1, :light_blue, [1, 2, 3]),
+        Property.new(2, :railroad, [1, 2, 3, 4])
+      )
+    ])
+    |> Kernel.++([
+      DualProperty.new(
+        Property.new(1, :light_blue, [1, 2, 3]),
+        Property.new(1, :brown, [1, 2])
+      )
+    ])
     |> Kernel.++(
-         [
-           DualProperty.new(
-             Property.new(4, :blue, [3, 8]),
-             Property.new(4, :green, [2, 4, 7])
-           )
-         ]
-       )
+      for _ <- 1..2,
+          do:
+            DualProperty.new(
+              Property.new(2, :pink, [1, 2, 4]),
+              Property.new(2, :orange, [1, 3, 5])
+            )
+    )
     |> Kernel.++(
-         [
-           DualProperty.new(
-             Property.new(4, :green, [2, 4, 7]),
-             Property.new(2, :railroad, [1, 2, 3, 4])
-           )
-         ]
-       )
-    |> Kernel.++(
-         [
-           DualProperty.new(
-             Property.new(2, :utility, [1, 2]),
-             Property.new(2, :railroad, [1, 2, 3, 4])
-           )
-         ]
-       )
-    |> Kernel.++(
-         [
-           DualProperty.new(
-             Property.new(1, :light_blue, [1, 2, 3]),
-             Property.new(2, :railroad, [1, 2, 3, 4])
-           )
-         ]
-       )
-    |> Kernel.++(
-         [
-           DualProperty.new(
-             Property.new(1, :light_blue, [1, 2, 3]),
-             Property.new(1, :brown, [1, 2])
-           )
-         ]
-       )
-    |> Kernel.++(
-         for _ <- 1..2,
-         do:
-           DualProperty.new(
-             Property.new(2, :pink, [1, 2, 4]),
-             Property.new(2, :orange, [1, 3, 5])
-           )
-       )
-    |> Kernel.++(
-         for _ <- 1..2,
-         do:
-           DualProperty.new(
-             Property.new(3, :red, [2, 3, 6]),
-             Property.new(3, :yellow, [2, 4, 6])
-           )
-       )
+      for _ <- 1..2,
+          do:
+            DualProperty.new(
+              Property.new(3, :red, [2, 3, 6]),
+              Property.new(3, :yellow, [2, 4, 6])
+            )
+    )
     |> Kernel.++(for _ <- 1..2, do: WildProperty.new())
   end
 end

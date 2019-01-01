@@ -60,7 +60,6 @@ defmodule MonobolyDeal.Game do
     }
   end
 
-
   def get_hand(game, player) do
     found_player = find_player(game, player)
     found_player.hand

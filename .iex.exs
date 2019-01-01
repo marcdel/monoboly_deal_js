@@ -17,6 +17,6 @@ alias MonobolyDeal.Deck.{
   Property,
   DualProperty,
   WildProperty
-  }
+}
 
 alias MonobolyDeal.Game.NameGenerator

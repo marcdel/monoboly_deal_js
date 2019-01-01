@@ -101,7 +101,8 @@ defmodule MonobolyDealWeb.GameChannelTest do
       assert hand == Server.get_hand(context.game_name, context.player)
     end
 
-    @tag :skip # figure out how, and at what level, to test this
+    # figure out how, and at what level, to test this
+    @tag :skip
     test "broadcasts a message to each player in the game with their hand", context do
       player2 = %Player{name: "player2"}
       player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
@@ -114,6 +115,7 @@ defmodule MonobolyDealWeb.GameChannelTest do
 
       player1_topic = "players:" <> context.player.name
       hand = Server.get_hand(context.game_name, context.player)
+
       assert_receive(
         %Phoenix.Socket.Broadcast{
           event: "player_hand",
@@ -124,6 +126,7 @@ defmodule MonobolyDealWeb.GameChannelTest do
         },
         100
       )
+
       assert_broadcast("player_hand", %{hand: ^hand})
 
       hand2 = Server.get_hand(context.game_name, player2)

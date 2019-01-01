@@ -10,12 +10,14 @@ defmodule MonobolyDeal.DeckTest do
     Property,
     DualProperty,
     WildProperty
-    }
+  }
 
   describe "cards/0" do
     test "returns 106 cards" do
-      count = Deck.cards()
-              |> Enum.count()
+      count =
+        Deck.cards()
+        |> Enum.count()
+
       assert count == 106
     end
 

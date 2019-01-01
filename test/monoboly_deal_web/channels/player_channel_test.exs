@@ -26,7 +26,8 @@ defmodule MonobolyDealWeb.PlayerChannelTest do
 
   describe "join" do
     test "assigns the current player to the socket", context do
-      {:ok, _reply, _socket} = subscribe_and_join(context.socket, PlayerChannel, context.topic, %{})
+      {:ok, _reply, _socket} =
+        subscribe_and_join(context.socket, PlayerChannel, context.topic, %{})
 
       assert context.socket.assigns.current_player == context.player
     end
@@ -34,7 +35,8 @@ defmodule MonobolyDealWeb.PlayerChannelTest do
 
   describe "hand_dealt" do
     test "pushes the dealt hand to the current player", context do
-      {:ok, _reply, socket} = subscribe_and_join(context.socket, PlayerChannel, context.topic, %{})
+      {:ok, _reply, socket} =
+        subscribe_and_join(context.socket, PlayerChannel, context.topic, %{})
 
       push(socket, "hand_dealt", %{game_name: context.game_name})
 
