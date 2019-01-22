@@ -1,27 +1,53 @@
 import {Channel, Socket} from "phoenix"
-import {GameState} from "../models/GameState"
+import {GameState, GameStateError} from "../models/GameState"
 import {Player} from "../models/Player"
 import {PlayerSerializer} from "../serializers/PlayerSerializer"
+
+type SuccessCallback = (response: any) => void
+type ErrorCallback = (error: GameStateError) => void
+type GameStateUpdatedCallback = (newGameState: GameState) => void
+type PlayerStateUpdatedCallback = (newPlayerState: Player) => void
 
 export class GameChannel {
   public channel: Channel
   private playerSerializer: PlayerSerializer
 
-  constructor(gameName: string, socket: Socket) {
+  constructor({
+    gameName,
+    socket,
+    successCallback,
+    errorCallback,
+    gameStateUpdatedCallback,
+    playerStateUpdatedCallback
+  }: {
+    gameName: string,
+    socket: Socket,
+    successCallback: SuccessCallback,
+    errorCallback: ErrorCallback,
+    gameStateUpdatedCallback: GameStateUpdatedCallback
+    playerStateUpdatedCallback: PlayerStateUpdatedCallback
+  }) {
     this.channel = socket.channel("games:" + gameName)
     this.playerSerializer = new PlayerSerializer()
 
+    this.onGameStateUpdated(gameStateUpdatedCallback)
+    this.onPlayerStateUpdated(playerStateUpdatedCallback)
+
     this.channel
       .join()
-      .receive("ok", (response: any) => {
-        console.log("game channel joined", {response})
-      })
-      .receive("error", (error: any) => {
-        console.log("game channel join failed", {error})
+      .receive("ok", successCallback)
+      .receive("error", errorCallback)
+  }
+
+  public dealHand() {
+    this.channel
+      .push("deal_hand", {})
+      .receive("error", (error) => {
+        console.log("deal_hand failed", {error})
       })
   }
 
-  public onGameStateUpdated(callBack: (gameState: GameState) => void) {
+  private onGameStateUpdated(callBack: (gameState: GameState) => void) {
     this.channel.on("game_state", (response: any) => {
       if (response) {
         const gameState = new GameState({
@@ -37,20 +63,12 @@ export class GameChannel {
     })
   }
 
-  public onPlayerStateUpdated(callBack: (playerState: Player) => void) {
+  private onPlayerStateUpdated(callBack: (playerState: Player) => void) {
     this.channel.on("player_state", (response: any) => {
       if (response) {
         const player = this.playerSerializer.deserialize(response)
         callBack(player)
       }
     })
-  }
-
-  public dealHand() {
-    this.channel
-      .push("deal_hand", {})
-      .receive("error", (error) => {
-        console.log("deal_hand failed", {error})
-      })
   }
 }

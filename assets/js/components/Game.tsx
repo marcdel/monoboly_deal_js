@@ -1,4 +1,4 @@
-import {Channel, Presence, Socket} from "phoenix"
+import {Socket} from "phoenix"
 import * as React from "react"
 import {GameChannel} from "../communication/GameChannel"
 import {GamePresence} from "../communication/GamePresence"
@@ -6,7 +6,7 @@ import {PlayerChannel} from "../communication/PlayerChannel"
 import {createPresence} from "../communication/presenceHelper"
 import {PlayersList} from "../components/PlayersList"
 import {Card} from "../models/Card"
-import {GameState} from "../models/GameState"
+import {GameState, GameStateError} from "../models/GameState"
 import {Player} from "../models/Player"
 import {PlayerHand} from "./PlayerHand"
 
@@ -32,6 +32,7 @@ export class Game extends React.Component<Props, State> {
       gameStarted: false,
       name: this.props.gameName,
       players: [],
+      error: null,
     })
 
     this.state = {
@@ -51,9 +52,14 @@ export class Game extends React.Component<Props, State> {
     const playerChannel = new PlayerChannel(playerName, socket)
     playerChannel.onHandUpdated(this.onHandUpdated)
 
-    const gameChannel = new GameChannel(gameName, socket)
-    gameChannel.onGameStateUpdated(this.onGameStateUpdated)
-    gameChannel.onPlayerStateUpdated(this.onPlayerStateUpdated)
+    const gameChannel = new GameChannel({
+      gameName,
+      socket,
+      successCallback: this.onGameChannelJoined,
+      errorCallback: this.onGameChannelJoinFailed,
+      gameStateUpdatedCallback: this.onGameStateUpdated,
+      playerStateUpdatedCallback: this.onPlayerStateUpdated,
+    })
 
     const gamePresence = new GamePresence(
       createPresence(gameChannel.channel),
@@ -65,6 +71,10 @@ export class Game extends React.Component<Props, State> {
 
   public render() {
     const {currentPlayer, gameState} = this.state
+
+    if(gameState.error) {
+      return <h3>{gameState.error.message}</h3>
+    }
 
     return (
       <div className="game-container">
@@ -78,7 +88,7 @@ export class Game extends React.Component<Props, State> {
   }
 
   private renderDealButton(gameState: GameState) {
-    if (gameState.gameStarted) {
+    if (gameState.gameStarted || gameState.error) {
       return null
     }
 
@@ -98,6 +108,15 @@ export class Game extends React.Component<Props, State> {
     currentPlayer.hand = cards
 
     this.setState({currentPlayer})
+  }
+
+  private onGameChannelJoined = (response: any) => {
+    console.log("game channel joined", {response})
+  }
+
+  private onGameChannelJoinFailed = (error: GameStateError) => {
+    console.log("game channel join failed", {error})
+    this.setState({gameState: {...this.state.gameState, error}})
   }
 
   private onGameStateUpdated = (newGameState: GameState) => {
