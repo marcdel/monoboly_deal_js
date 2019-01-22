@@ -84,7 +84,7 @@ defmodule MonobolyDealWeb.GameChannelTest do
     end
 
     test "returns error if game does not exist", context do
-      assert {:error, %{reason: "Game does not exist"}} =
+      assert {:error, %{error: :game_not_found, message: "Oops! We couldn't find that game."}} =
                subscribe_and_join(context.socket, GameChannel, "games:9999", %{})
     end
 
@@ -96,7 +96,7 @@ defmodule MonobolyDealWeb.GameChannelTest do
       player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
       {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
 
-      assert {:error, %{reason: "The game has already started"}} =
+      assert {:error, %{error: :game_started, message: "Oops! This game has already started."}} =
                subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
     end
   end

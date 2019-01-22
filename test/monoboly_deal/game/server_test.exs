@@ -73,7 +73,7 @@ defmodule MonobolyDeal.Game.ServerTest do
 
       game_state = Server.game_state(game_name)
       assert game_state.players == [%{name: "player1"}]
-      assert error == "The game has already started"
+      assert error == %{error: :game_started, message: "Oops! This game has already started."}
     end
   end
 

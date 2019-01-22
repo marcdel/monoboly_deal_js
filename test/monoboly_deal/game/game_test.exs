@@ -76,7 +76,7 @@ defmodule MonobolyDeal.GameTest do
 
       {:error, error} = Game.join(game, player2)
 
-      assert error == "The game has already started"
+      assert error == %{error: :game_started, message: "Oops! This game has already started."}
 
       game_state = Game.game_state(game)
       assert Enum.count(game_state.players) == 1

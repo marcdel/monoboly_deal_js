@@ -34,7 +34,7 @@ defmodule MonobolyDealWeb.GameController do
 
       nil ->
         conn
-        |> put_flash(:error, "Oops! That game wasn't found.")
+        |> put_flash(:error, "Oops! We couldn't find that game.")
         |> redirect(to: Routes.game_path(conn, :new))
         |> halt()
     end

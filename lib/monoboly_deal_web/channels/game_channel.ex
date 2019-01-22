@@ -13,11 +13,11 @@ defmodule MonobolyDealWeb.GameChannel do
             {:ok, assign(socket, :game_name, game_name)}
 
           {:error, error} ->
-            {:error, %{reason: error}}
+            {:error, error}
         end
 
       nil ->
-        {:error, %{reason: "Game does not exist"}}
+        {:error, %{error: :game_not_found, message: "Oops! We couldn't find that game."}}
     end
   end
 

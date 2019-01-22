@@ -16,7 +16,7 @@ defmodule MonobolyDeal.Game do
 
   def join(%{started: true} = game, player) do
     case playing?(game, player) do
-      false -> {:error, "The game has already started"}
+      false -> {:error, %{error: :game_started, message: "Oops! This game has already started."}}
       true -> {:ok, game}
     end
   end

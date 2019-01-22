@@ -15,8 +15,8 @@ export class PlayerChannel {
       .receive("ok", (response: any) => {
         console.log("player channel joined", {response})
       })
-      .receive("error", (reason: any) => {
-        console.log("player channel join failed", {reason})
+      .receive("error", (error: any) => {
+        console.log("player channel join failed", {error})
       })
   }
 
