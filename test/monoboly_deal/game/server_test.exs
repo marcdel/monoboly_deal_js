@@ -47,10 +47,33 @@ defmodule MonobolyDeal.Game.ServerTest do
       player2 = %Player{name: "player2"}
       {:ok, _pid} = Server.start_link(game_name, player1)
 
-      Server.join(game_name, player2)
+      {:ok, game} = Server.join(game_name, player2)
+
+      assert game.players == [%{name: "player1"}, %{name: "player2"}]
+    end
+
+    test "does nothing when player has already been added" do
+      game_name = NameGenerator.generate()
+      player1 = %Player{name: "player1"}
+      {:ok, _pid} = Server.start_link(game_name, player1)
+
+      {:ok, game_state} = Server.join(game_name, player1)
+
+      assert game_state.players == [%{name: "player1"}]
+    end
+
+    test "returns an error when the game has already started" do
+      game_name = NameGenerator.generate()
+      player1 = %Player{name: "player1"}
+      {:ok, _pid} = Server.start_link(game_name, player1)
+      :ok = Server.deal_hand(game_name)
+
+      player2 = %Player{name: "player2"}
+      {:error, error} = Server.join(game_name, player2)
 
       game_state = Server.game_state(game_name)
-      assert game_state.players == [%{name: "player1"}, %{name: "player2"}]
+      assert game_state.players == [%{name: "player1"}]
+      assert error == "The game has already started"
     end
   end
 

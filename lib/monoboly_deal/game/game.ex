@@ -14,10 +14,12 @@ defmodule MonobolyDeal.Game do
     }
   end
 
+  def join(%{started: true} = game, _player), do: {:error, "The game has already started"}
+
   def join(game, player) do
     case Enum.any?(game.players, fn p -> p.name == player.name end) do
-      false -> %{game | players: game.players ++ [player]}
-      true -> game
+      false -> {:ok, %{game | players: game.players ++ [player]}}
+      true -> {:ok, game}
     end
   end
 

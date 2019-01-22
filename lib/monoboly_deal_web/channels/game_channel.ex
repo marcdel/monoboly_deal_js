@@ -7,10 +7,14 @@ defmodule MonobolyDealWeb.GameChannel do
   def join("games:" <> game_name, _params, socket) do
     case Server.game_pid(game_name) do
       pid when is_pid(pid) ->
-        Server.join(game_name, current_player(socket))
+        case Server.join(game_name, current_player(socket)) do
+          {:ok, _game_state} ->
+            send(self(), {:after_join, game_name})
+            {:ok, assign(socket, :game_name, game_name)}
 
-        send(self(), {:after_join, game_name})
-        {:ok, assign(socket, :game_name, game_name)}
+          {:error, error} ->
+            {:error, %{reason: error}}
+        end
 
       nil ->
         {:error, %{reason: "Game does not exist"}}

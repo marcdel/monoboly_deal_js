@@ -62,7 +62,6 @@ defmodule MonobolyDealWeb.GameChannelTest do
     end
 
     test "pushes player state to the player", context do
-      Server.deal_hand(context.game_name)
       player_state = Server.player_state(context.game_name, context.player)
 
       {:ok, _reply, _socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
@@ -87,6 +86,18 @@ defmodule MonobolyDealWeb.GameChannelTest do
     test "returns error if game does not exist", context do
       assert {:error, %{reason: "Game does not exist"}} =
                subscribe_and_join(context.socket, GameChannel, "games:9999", %{})
+    end
+
+    test "returns error if game has already started", context do
+      {:ok, _reply, socket} = subscribe_and_join(context.socket, GameChannel, context.topic, %{})
+      push(socket, "deal_hand", %{})
+
+      player2 = %Player{name: "player2"}
+      player2_token = Phoenix.Token.sign(@endpoint, "user socket", player2)
+      {:ok, player2_socket} = connect(MonobolyDealWeb.UserSocket, %{"token" => player2_token})
+
+      assert {:error, %{reason: "The game has already started"}} =
+               subscribe_and_join(player2_socket, GameChannel, context.topic, %{})
     end
   end
 
