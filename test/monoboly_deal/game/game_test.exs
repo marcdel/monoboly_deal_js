@@ -59,6 +59,15 @@ defmodule MonobolyDeal.GameTest do
       assert [%Player{name: "player1"}] = game.players
     end
 
+    test "player can rejoin a game that has already started", %{game: game, player1: player1} do
+      game = Game.deal(game)
+
+      {:ok, game} = Game.join(game, player1)
+
+      assert Enum.count(game.players) == 1
+      assert [%Player{name: "player1"}] = game.players
+    end
+
     test "returns an error when new player joins an in progress game", %{
       game: game,
       player2: player2
