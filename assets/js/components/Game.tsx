@@ -78,10 +78,8 @@ export class Game extends React.Component<Props, State> {
 
     return (
       <div className="game-container">
-        <div className="hand-container">
-          {this.renderDealButton(gameState)}
-          {gameState.gameStarted && <PlayerHand cards={currentPlayer.hand}/>}
-        </div>
+        {this.renderDealButton(gameState)}
+        {gameState.gameStarted && <PlayerHand cards={currentPlayer.hand}/>}
         <PlayersList players={gameState.players}/>
       </div>
     )

@@ -10,6 +10,7 @@ export const MoneyCard = (props: Props) => {
   return (
     <div className="card">
       <div>M{card.value}</div>
+      <div></div>
       <div>M{card.value}</div>
       <div>M{card.value}</div>
     </div>
